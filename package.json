@@ -13,6 +13,7 @@
   "dependencies": {
     "@astrojs/db": "^0.15.0",
     "@astrojs/react": "^4.3.0",
+    "@astrojs/vercel": "^8.1.4",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@mui/material": "^7.1.0",
