@@ -1,0 +1,47 @@
+---
+import Layout from '../layouts/Layout.astro';
+import ProductCard from '../components/ProductCard.astro';
+import CartButton from '../components/CartButton.jsx';
+
+// SQLite-аас бүтээгдэхүүн авах (жишээ)
+const products = [
+  {
+    id: 1,
+    name: 'MacBook Pro M3',
+    price: 2500000,
+    image: 'https://picsum.photos/400/250?random=2',
+    description: 'Хүчирхэг M3 процессортой',
+    category: 'Ноутбук',
+    rating: 4.9
+  },
+  {
+    id: 2,
+    name: 'iPhone 15 Pro',
+    price: 1800000,
+    image: 'https://picsum.photos/400/250?random=3',
+    description: 'Хамгийн сүүлийн үеийн iPhone',
+    category: 'Утас',
+    rating: 4.8
+  }
+];
+---
+
+<Layout title="Онлайн дэлгүүр">
+  <div class="container my-5">
+    <div class="row mb-4">
+      <div class="col-md-8">
+        <h1 class="display-4 text-primary">Шинэ бүтээгдэхssүүн</h1>
+        <p class="lead text-muted">Технологийн хамгийн сайн бүтээгдэхүүнүүд</p>
+      </div>
+      <div class="col-md-4 d-flex align-items-center justify-content-end">
+        <CartButton client:load />
+      </div>
+    </div>
+    
+    <div class="row">
+      {products.map(product => (
+        <ProductCard {...product} />
+      ))}
+    </div>
+  </div>
+</Layout>
