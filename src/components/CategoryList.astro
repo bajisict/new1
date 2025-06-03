@@ -1,0 +1,23 @@
+---
+import 'bootstrap/dist/css/bootstrap.min.css';
+
+// Жагсаалтын категориудыг массив хэлбэрээр өгч болно
+const categories = [
+  { id: 1, name: 'Гар утас', href: '/category/mobile' },
+  { id: 2, name: 'Цахилгаан бараа', href: '/category/electronics' },
+  { id: 3, name: 'Гэр ахуйн бараа', href: '/category/home' },
+  { id: 4, name: 'Хувцас', href: '/category/clothing' },
+  { id: 5, name: 'Спорт', href: '/category/sport' },
+];
+---
+
+<div class="container my-4">
+  <h2>Барааны Категори</h2>
+  <ul class="list-group">
+    {categories.map(category => (
+      <li class="list-group-item">
+        <a href={category.href} class="text-decoration-none">{category.name}</a>
+      </li>
+    ))}
+  </ul>
+</div>

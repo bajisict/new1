@@ -1,0 +1,101 @@
+---
+import { db, User, Post } from 'astro:db';
+import { eq, count } from 'astro:db';
+import Layout from '../layouts/Layout.astro';
+
+// Fetch users with post counts
+const users = await db
+  .select({
+    id: User.id,
+    name: User.name,
+    email: User.email,
+    createdAt: User.createdAt,
+    isActive: User.isActive,
+    postCount: count(Post.id)
+  })
+  .from(User)
+  .leftJoin(Post, eq(User.id, Post.userId))
+  .groupBy(User.id)
+  .orderBy(User.name);
+---
+
+<Layout title="Users - Astro DB Sample">
+  <main class="container">
+    <h1>Users</h1>
+    <div class="users">
+      {users.map(user => (
+        <div class="user-card">
+          <h3>{user.name}</h3>
+          <p class="email">{user.email}</p>
+          <div class="stats">
+            <span>Posts: {user.postCount}</span>
+            <span>•</span>
+            <span>Joined: {new Date(user.createdAt).toLocaleDateString()}</span>
+            <span>•</span>
+            <span class={user.isActive ? 'active' : 'inactive'}>
+              {user.isActive ? 'Active' : 'Inactive'}
+            </span>
+          </div>
+        </div>
+      ))}
+    </div>
+    <a href="/" class="back-link">← Back to Posts</a>
+  </main>
+</Layout>
+
+<style>
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+  
+  .users {
+    display: grid;
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+  
+  .user-card {
+    border: 1px solid #ddd;
+    padding: 1.5rem;
+    border-radius: 8px;
+  }
+  
+  .user-card h3 {
+    margin: 0 0 0.5rem 0;
+  }
+  
+  .email {
+    color: #666;
+    margin: 0 0 1rem 0;
+  }
+  
+  .stats {
+    font-size: 0.9rem;
+    color: #666;
+  }
+  
+  .stats span {
+    margin: 0 0.5rem;
+  }
+  
+  .active {
+    color: #28a745;
+    font-weight: bold;
+  }
+  
+  .inactive {
+    color: #dc3545;
+    font-weight: bold;
+  }
+  
+  .back-link {
+    color: #0066cc;
+    text-decoration: none;
+  }
+  
+  .back-link:hover {
+    text-decoration: underline;
+  }
+</style>

@@ -1,0 +1,487 @@
+---
+// src/pages/products.astro
+import Database from 'better-sqlite3';
+
+// Get URL parameters for filtering
+const url = new URL(Astro.request.url);
+const searchParams = {
+  search: url.searchParams.get('search') || '',
+  category: url.searchParams.get('category') || '',
+  brand: url.searchParams.get('brand') || '',
+  stock: url.searchParams.get('stock') || '',
+  sortBy: url.searchParams.get('sortBy') || 'name',
+  sortOrder: url.searchParams.get('sortOrder') || 'asc'
+};
+
+// Connect to database
+const db = new Database('products.db');
+
+// Build dynamic SQL query based on filters
+let whereConditions = [];
+let queryParams = [];
+
+if (searchParams.search) {
+  whereConditions.push('(name LIKE ? OR description LIKE ?)');
+  queryParams.push(`%${searchParams.search}%`, `%${searchParams.search}%`);
+}
+
+if (searchParams.category) {
+  whereConditions.push('category = ?');
+  queryParams.push(searchParams.category);
+}
+
+if (searchParams.brand) {
+  whereConditions.push('brand = ?');
+  queryParams.push(searchParams.brand);
+}
+
+if (searchParams.stock !== '') {
+  whereConditions.push('in_stock = ?');
+  queryParams.push(parseInt(searchParams.stock));
+}
+
+// Build final query
+let query = 'SELECT * FROM products';
+if (whereConditions.length > 0) {
+  query += ' WHERE ' + whereConditions.join(' AND ');
+}
+
+// Add sorting
+const validSortFields = ['name', 'price', 'category', 'brand'];
+const validSortOrders = ['asc', 'desc'];
+
+if (validSortFields.includes(searchParams.sortBy) && validSortOrders.includes(searchParams.sortOrder)) {
+  query += ` ORDER BY ${searchParams.sortBy} ${searchParams.sortOrder.toUpperCase()}`;
+}
+
+// Execute query
+const products = db.prepare(query).all(...queryParams);
+
+// Get filter options
+const allCategories = db.prepare('SELECT DISTINCT category FROM products ORDER BY category').all();
+const allBrands = db.prepare('SELECT DISTINCT brand FROM products ORDER BY brand').all();
+
+db.close();
+
+// Helper function to build filter URLs
+function buildFilterUrl(newParams) {
+  const urlParams = new URLSearchParams();
+  
+  Object.entries({...searchParams, ...newParams}).forEach(([key, value]) => {
+    if (value) {
+      urlParams.set(key, value);
+    }
+  });
+  
+  return '/products' + (urlParams.toString() ? '?' + urlParams.toString() : '');
+}
+---
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Products - Server-side Filtering</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: #f8f9fa;
+      line-height: 1.6;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    
+    .header h1 {
+      font-size: 2.5rem;
+      color: #343a40;
+      margin-bottom: 0.5rem;
+    }
+    
+    .results-info {
+      color: #6c757d;
+      font-size: 1.1rem;
+    }
+    
+    .filters-form {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      margin-bottom: 2rem;
+    }
+    
+    .filters-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .filter-group label {
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: #495057;
+    }
+    
+    .filter-group input,
+    .filter-group select {
+      padding: 0.75rem;
+      border: 2px solid #e9ecef;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: border-color 0.2s;
+    }
+    
+    .filter-group input:focus,
+    .filter-group select:focus {
+      outline: none;
+      border-color: #007bff;
+    }
+    
+    .filter-actions {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      text-align: center;
+      transition: all 0.2s;
+    }
+    
+    .btn-primary {
+      background: #007bff;
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: #0056b3;
+    }
+    
+    .btn-secondary {
+      background: #6c757d;
+      color: white;
+    }
+    
+    .btn-secondary:hover {
+      background: #545b62;
+    }
+    
+    .sorting-controls {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      margin-bottom: 2rem;
+      padding: 1rem;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .sorting-controls label {
+      font-weight: 600;
+      color: #495057;
+    }
+    
+    .sorting-controls select {
+      padding: 0.5rem;
+      border: 1px solid #ced4da;
+      border-radius: 4px;
+    }
+    
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 2rem;
+    }
+    
+    .product-card {
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    
+    .product-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+    
+    .product-image {
+      height: 200px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 600;
+    }
+    
+    .product-info {
+      padding: 1.5rem;
+    }
+    
+    .product-name {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: #343a40;
+    }
+    
+    .product-brand {
+      color: #6c757d;
+      font-size: 0.9rem;
+      margin-bottom: 0.75rem;
+    }
+    
+    .product-category {
+      background: #e7f3ff;
+      color: #0056b3;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      display: inline-block;
+      margin-bottom: 1rem;
+    }
+    
+    .product-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 1rem;
+      border-top: 1px solid #e9ecef;
+    }
+    
+    .product-price {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #28a745;
+    }
+    
+    .stock-badge {
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+    
+    .in-stock {
+      background: #d4edda;
+      color: #155724;
+    }
+    
+    .out-of-stock {
+      background: #f8d7da;
+      color: #721c24;
+    }
+    
+    .no-results {
+      text-align: center;
+      padding: 4rem 2rem;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .no-results h3 {
+      font-size: 1.5rem;
+      color: #343a40;
+      margin-bottom: 1rem;
+    }
+    
+    .no-results p {
+      color: #6c757d;
+      margin-bottom: 2rem;
+    }
+    
+    @media (max-width: 768px) {
+      .container {
+        padding: 1rem;
+      }
+      
+      .filters-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .filter-actions {
+        justify-content: center;
+      }
+      
+      .sorting-controls {
+        flex-direction: column;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Product Catalog</h1>
+      <div class="results-info">
+        Found {products.length} products
+      </div>
+    </div>
+
+    <!-- Filter Form -->
+    <form class="filters-form" method="GET" action="/products">
+      <div class="filters-grid">
+        <div class="filter-group">
+          <label for="search">Search Products</label>
+          <input 
+            type="text" 
+            id="search" 
+            name="search" 
+            placeholder="Search products..."
+            value={searchParams.search}
+          >
+        </div>
+        
+        <div class="filter-group">
+          <label for="category">Category</label>
+          <select id="category" name="category">
+            <option value="">All Categories</option>
+            {allCategories.map(cat => (
+              <option 
+                value={cat.category} 
+                selected={searchParams.category === cat.category}
+              >
+                {cat.category}
+              </option>
+            ))}
+          </select>
+        </div>
+        
+        <div class="filter-group">
+          <label for="brand">Brand</label>
+          <select id="brand" name="brand">
+            <option value="">All Brands</option>
+            {allBrands.map(brand => (
+              <option 
+                value={brand.brand} 
+                selected={searchParams.brand === brand.brand}
+              >
+                {brand.brand}
+              </option>
+            ))}
+          </select>
+        </div>
+        
+        <div class="filter-group">
+          <label for="stock">Availability</label>
+          <select id="stock" name="stock">
+            <option value="">All Products</option>
+            <option value="1" selected={searchParams.stock === '1'}>In Stock</option>
+            <option value="0" selected={searchParams.stock === '0'}>Out of Stock</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="filter-actions">
+        <button type="submit" class="btn btn-primary">Apply Filters</button>
+        <a href="/products" class="btn btn-secondary">Clear All</a>
+      </div>
+    </form>
+
+    <!-- Sorting Controls -->
+    <div class="sorting-controls">
+      <label>Sort by:</label>
+      <select 
+        id="sortBy" 
+        onchange="updateSort()"
+      >
+        <option value="name" selected={searchParams.sortBy === 'name'}>Name</option>
+        <option value="price" selected={searchParams.sortBy === 'price'}>Price</option>
+        <option value="category" selected={searchParams.sortBy === 'category'}>Category</option>
+        <option value="brand" selected={searchParams.sortBy === 'brand'}>Brand</option>
+      </select>
+      
+      <select 
+        id="sortOrder" 
+        onchange="updateSort()"
+      >
+        <option value="asc" selected={searchParams.sortOrder === 'asc'}>Ascending</option>
+        <option value="desc" selected={searchParams.sortOrder === 'desc'}>Descending</option>
+      </select>
+    </div>
+
+    <!-- Products Grid -->
+    {products.length > 0 ? (
+      <div class="products-grid">
+        {products.map(product => (
+          <div class="product-card">
+            <div class="product-image">
+              {product.image_url ? (
+                <img src={product.image_url} alt={product.name} style="width: 100%; height: 100%; object-fit: cover;">
+              ) : (
+                <span>Product Image</span>
+              )}
+            </div>
+            
+            <div class="product-info">
+              <h3 class="product-name">{product.name}</h3>
+              <div class="product-brand">{product.brand}</div>
+              <span class="product-category">{product.category}</span>
+              
+              <div class="product-footer">
+                <div class="product-price">${product.price}</div>
+                <span class={`stock-badge ${product.in_stock ? 'in-stock' : 'out-of-stock'}`}>
+                  {product.in_stock ? 'In Stock' : 'Out of Stock'}
+                </span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    ) : (
+      <div class="no-results">
+        <h3>No products found</h3>
+        <p>Try adjusting your search criteria or filters.</p>
+        <a href="/products" class="btn btn-primary">View All Products</a>
+      </div>
+    )}
+  </div>
+
+  <script>
+    function updateSort() {
+      const sortBy = document.getElementById('sortBy').value;
+      const sortOrder = document.getElementById('sortOrder').value;
+      
+      const url = new URL(window.location);
+      url.searchParams.set('sortBy', sortBy);
+      url.searchParams.set('sortOrder', sortOrder);
+      
+      window.location.href = url.toString();
+    }
+  </script>
+</body>
+</html>

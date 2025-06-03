@@ -1,0 +1,70 @@
+---
+import { db } from '../lib/db'; // Өөрийн db холболтыг import хийнэ
+
+// Categories-уудыг database-аас авах
+const categories = await db.prepare('SELECT * FROM category ORDER BY name').all();
+---
+
+<aside class="category-sidebar">
+  <h3>Категори</h3>
+  <nav>
+    <ul class="category-list">
+      {categories.map((category) => (
+        <li class="category-item">
+          <a href={`/category/${category.slug || category.id}`} class="category-link">
+            {category.name}
+            {category.count && <span class="category-count">({category.count})</span>}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+</aside>
+
+<style>
+  .category-sidebar {
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    min-width: 200px;
+  }
+
+  .category-sidebar h3 {
+    margin: 0 0 1rem 0;
+    color: #2c3e50;
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+
+  .category-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .category-item {
+    margin-bottom: 0.5rem;
+  }
+
+  .category-link {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0.75rem;
+    color: #495057;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+  }
+
+  .category-link:hover {
+    background: #e9ecef;
+    color: #2c3e50;
+  }
+
+  .category-count {
+    font-size: 0.85rem;
+    color: #6c757d;
+    font-weight: 500;
+  }
+</style>
