@@ -20,14 +20,6 @@
 			"dest": "_render"
 		},
 		{
-			"src": "^/api/orders/?$",
-			"dest": "_render"
-		},
-		{
-			"src": "^/api/posts/?$",
-			"dest": "_render"
-		},
-		{
 			"src": "^/$",
 			"dest": "_render"
 		}

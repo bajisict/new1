@@ -1,4 +1,4 @@
-import { c as createComponent, b as createAstro, r as renderHead, e as renderSlot, f as renderScript, g as renderTemplate, m as maybeRenderHead, h as addAttribute, i as renderComponent } from '../chunks/astro/server_BL0pny8L.mjs';
+import { c as createComponent, b as createAstro, r as renderHead, e as renderSlot, f as renderScript, g as renderTemplate, m as maybeRenderHead, h as addAttribute, i as renderComponent } from '../chunks/astro/server_oFVf4HsN.mjs';
 import 'kleur/colors';
 import 'clsx';
 /* empty css                                 */
@@ -289,7 +289,7 @@ const $$Index = createComponent(($$result, $$props, $$slots) => {
       rating: 4.8
     }
   ];
-  return renderTemplate`${renderComponent($$result, "Layout", $$Layout, { "title": "\u041E\u043D\u043B\u0430\u0439\u043D \u0434\u044D\u043B\u0433\u04AF\u04AF\u0440" }, { "default": ($$result2) => renderTemplate` ${maybeRenderHead()}<div class="container my-5"> <div class="row mb-4"> <div class="col-md-8"> <h1 class="display-4 text-primary">Шинэ бүтээгдэхssүүн</h1> <p class="lead text-muted">Технологийн хамгийн сайн бүтээгдэхүүнүүд</p> </div> <div class="col-md-4 d-flex align-items-center justify-content-end"> ${renderComponent($$result2, "CartButton", CartButton, { "client:load": true, "client:component-hydration": "load", "client:component-path": "D:/New folder (2)/New folder/afraid-apogee/src/components/CartButton.jsx", "client:component-export": "default" })} </div> </div> <div class="row"> ${products.map((product) => renderTemplate`${renderComponent($$result2, "ProductCard", $$ProductCard, { ...product })}`)} </div> </div> ` })}`;
+  return renderTemplate`${renderComponent($$result, "Layout", $$Layout, { "title": "\u041E\u043D\u043B\u0430\u0439\u043D \u0434\u044D\u043B\u0433\u04AF\u04AF\u0440" }, { "default": ($$result2) => renderTemplate` ${maybeRenderHead()}<div class="container my-5"> <div class="row mb-4"> <div class="col-md-8"> <h1 class="display-4 text-primary">Шинэ бүтээaгдэхssүүн</h1> <p class="lead text-muted">Технологийн хамгийн сайн бүтээгдэхүүнүүд</p> </div> <div class="col-md-4 d-flex align-items-center justify-content-end"> ${renderComponent($$result2, "CartButton", CartButton, { "client:load": true, "client:component-hydration": "load", "client:component-path": "D:/New folder (2)/New folder/afraid-apogee/src/components/CartButton.jsx", "client:component-export": "default" })} </div> </div> <div class="row"> ${products.map((product) => renderTemplate`${renderComponent($$result2, "ProductCard", $$ProductCard, { ...product })}`)} </div> </div> ` })}`;
 }, "D:/New folder (2)/New folder/afraid-apogee/src/pages/index.astro", void 0);
 
 const $$file = "D:/New folder (2)/New folder/afraid-apogee/src/pages/index.astro";
