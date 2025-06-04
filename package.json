@@ -3,12 +3,8 @@
   "type": "module",
   "version": "0.0.1",
   "scripts": {
-    "dev": "astro dev",
-    "build": "astro build --remote",
-    "preview": "astro preview",
-    "astro": "astro",
-    "db:generate": "astro db generate",
-    "db:sync": "astro sync"
+    "build": "astro build",
+    "start": "astro dev"
   },
   "dependencies": {
     "@astrojs/db": "^0.15.0",
