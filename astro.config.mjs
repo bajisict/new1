@@ -6,10 +6,5 @@ import vercel from '@astrojs/vercel/serverless';
 export default defineConfig({
   integrations: [react()],
   output: 'server',
-  vite: {
-    define: {
-      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development')
-    }
-  },
   adapter: vercel()
 });
