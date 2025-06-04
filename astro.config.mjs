@@ -6,7 +6,7 @@ import node from '@astrojs/node';
 export default defineConfig({
   integrations: [react()],
   output: 'server',
-  aadapter: node({
+  adapter: node({
     mode: 'standalone' // or "middleware" if you're deploying to something like Netlify Functions
   }),
 });
