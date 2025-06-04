@@ -7,8 +7,6 @@
     "start": "astro dev"
   },
   "dependencies": {
-    "@astrojs/db": "^0.15.0",
-    "@astrojs/node": "^9.2.2",
     "@astrojs/react": "^4.3.0",
     "@astrojs/vercel": "^8.1.4",
     "@emotion/react": "^11.14.0",
@@ -19,12 +17,6 @@
     "esbuild": "^0.25.4",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
-  },
-  "devDependencies": {
-    "@tailwindcss/postcss": "^4.1.7",
-    "autoprefixer": "^10.4.21",
-    "postcss": "^8.5.3",
-    "tailwindcss": "^4.1.7"
   },
   "description": "```sh npm create astro@latest -- --template basics ```",
   "main": "tailwind.config.js",
