@@ -1,47 +1,47 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import ProductCard from '../components/ProductCard.astro';
-import CartButton from '../components/CartButton.jsx';
+import { getAllProducts } from '../lib/db';
+import ProductCarousel from '../components/products/ProductCarousel.astro';
+import ProductListPagination from '../components/ProductListPagination.astro';
 
-// SQLite-аас бүтээгдэхүүн авах (жишээ)
-const products = [
-  {
-    id: 1,
-    name: 'MacBook Pro M3',
-    price: 2500000,
-    image: 'https://picsum.photos/400/250?random=2',
-    description: 'Хүчирхэг M3 процессортой',
-    category: 'Ноутбук',
-    rating: 4.9
-  },
-  {
-    id: 2,
-    name: 'iPhone 15 Pro',
-    price: 1800000,
-    image: 'https://picsum.photos/400/250?random=3',
-    description: 'Хамгийн сүүлийн үеийн iPhone',
-    category: 'Утас',
-    rating: 4.8
-  }
-];
+const products = await getAllProducts();
 ---
 
 <Layout title="Онлайн дэлгүүр">
-  <div class="container my-5">
+  <!-- Hero Section with Carousel -->
+  <div class="container py-5">
+    <!-- <h1 class="display-4 fw-bold text-center mb-4 text-dark">
+      Шилдэг бүтээгдэхүүн 
+    </h1> -->
+    
+    <ProductCarousel products/>
+  </div>
+  <div class="text-center mt-4">
+  <a href="/products" class="btn btn-outline-primary btn-lg">
+    Бүх бүтээгдэхүүнийг үзэх
+  </a>
+</div>
+
+
+  <!-- Products Section -->
+  <div class="container py-4">
+    <!-- Section Header -->
     <div class="row mb-4">
       <div class="col-md-8">
-        <h1 class="display-4 text-primary">Шинэ бүтээaгдэхssүүн</h1>
+        <h2 class="text-primary">Шинэ бүтээгдэхүүн</h2>
         <p class="lead text-muted">Технологийн хамгийн сайн бүтээгдэхүүнүүд</p>
       </div>
-      <div class="col-md-4 d-flex align-items-center justify-content-end">
-        <CartButton client:load />
-      </div>
     </div>
-    
+
+    <!-- Products Grid -->
     <div class="row">
-      {products.map(product => (
-        <ProductCard {...product} />
-      ))}
+      <ProductListPagination products={products} ></ProductListPagination>
+      <!-- {products.map(product => (
+        <div class="col-lg-4 col-md-6 mb-4">
+          <ProductCard {...product} />
+        </div>
+      ))} -->
     </div>
   </div>
 </Layout>

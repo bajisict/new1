@@ -1,34 +1,60 @@
 ---
-import 'bootstrap/dist/css/bootstrap.min.css';
-const pathname = new URL(Astro.request.url).pathname;
 ---
-
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<nav class="navbar navbar-expand-lg bg-white border-bottom sticky-top shadow-sm">
   <div class="container">
-    <a class="navbar-brand" href="/">Our Store</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+    <a class="navbar-brand fw-bold text-dark d-flex align-items-center" href="/">
+      <i class="bi bi-shop me-2"></i>
+      HOMI store
+    </a>
+
+    <button
+      class="navbar-toggler border-0"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarNav"
+    >
       <span class="navbar-toggler-icon"></span>
     </button>
+
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav me-auto">
         <li class="nav-item">
-          <a class={`nav-link ${pathname === "/" ? "active" : ""}`} href="/">Home</a>
+          <a class="nav-link text-dark" href="/">Нүүр</a>
         </li>
         <li class="nav-item">
-          <a class={`nav-link ${pathname === "/products" ? "active" : ""}`} href="/products">Products</a>
-        </li>
-        <li class="nav-item">
-          <a class={`nav-link ${pathname === "/about" ? "active" : ""}`} href="/about">About</a>
+          <a class="nav-link text-dark" href="/products">Бүтээгдэхүүн</a>
         </li>
       </ul>
-      <div class="d-flex">
-        <button class="btn btn-outline-primary position-relative" id="cartBtn">
-          Cart
-          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="cartCount">
-            0
-          </span>
-        </button>
-      </div>
+
+      <button 
+        type="button" 
+        class="btn btn-outline-dark position-relative"
+        data-bs-toggle="modal"
+        data-bs-target="#cartModal"
+      >
+        <i class="bi bi-cart3"></i>
+        <span 
+          id="cartCount" 
+          class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+        >
+          0
+        </span>
+      </button>
     </div>
   </div>
 </nav>
+
+<style>
+  .navbar {
+    font-family: 'Segoe UI', sans-serif;
+  }
+
+  .navbar .nav-link:hover {
+    color: #6c757d !important;
+  }
+
+  .btn-outline-dark:hover {
+    background-color: #343a40;
+    color: white;
+  }
+</style>

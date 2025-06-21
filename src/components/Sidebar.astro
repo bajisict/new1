@@ -1,0 +1,66 @@
+---
+const { children } = Astro.slots;
+---
+
+<div class="d-flex">
+  <!-- Sidebar -->
+  <nav class="sidebar bg-white p-4 border-end shadow-sm">
+    <ul class="nav flex-column">
+      <li class="nav-item mb-2">
+        <a href="/" class="nav-link d-flex align-items-center text-dark">
+          <i class="bi bi-house-door me-2"></i>
+          Нүүр
+        </a>
+      </li>
+      <li class="nav-item mb-2">
+        <a href="/products" class="nav-link d-flex align-items-center text-dark">
+          <i class="bi bi-box-seam me-2"></i>
+          Бүтээгдэхүүн
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="/about" class="nav-link d-flex align-items-center text-dark">
+          <i class="bi bi-info-circle me-2"></i>
+          Бидний тухай
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Main content -->
+  <div class="main-content flex-grow-1 p-4">
+    <slot />
+  </div>
+</div>
+
+<style>
+  .sidebar {
+    width: 240px;
+    min-height: 100vh;
+    position: sticky;
+    top: 0;
+    font-family: 'Segoe UI', sans-serif;
+  }
+
+  .nav-link {
+    font-size: 16px;
+    transition: background 0.2s, color 0.2s;
+    border-radius: 6px;
+    padding: 10px 12px;
+  }
+
+  .nav-link:hover {
+    background-color: #f0f0f0;
+    color: #0d6efd;
+  }
+
+  @media (max-width: 768px) {
+    .sidebar {
+      display: none;
+    }
+  }
+
+  .main-content {
+    width: 100%;
+  }
+</style>

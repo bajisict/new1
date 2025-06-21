@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import CartModal from './CartModal.jsx';
 
 const CartButton = () => {
-  const [isCartOpen, setIsCartOpen] = useState(true);
+  const [isCartOpen, setIsCartOpen] = useState(false);
   const [itemCount, setItemCount] = useState(0);
 
   // Сагсны тоог шинэчлэх

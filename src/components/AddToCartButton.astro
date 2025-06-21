@@ -1,0 +1,43 @@
+---
+// Props
+const { id, name, price, image } = Astro.props;
+---
+
+<button
+  class="add-to-cart-btn"
+  data-product-id={id}
+  onclick={`cartManager.addToCart({
+    id: ${id},
+    name: '${name}',
+    price: ${price},
+    image: '${image}'
+  })`}
+>
+  <span class="ms-1">Add to cart</span>
+</button>
+
+<style>
+  .add-to-cart-btn {
+    background: #fff;
+    color: #111;
+    border: 1px solid #ccc;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .add-to-cart-btn:hover {
+    background: #f3f3f3;
+    border-color: #111;
+    color: #000;
+  }
+
+  .add-to-cart-btn:active {
+    transform: scale(0.97);
+    background: #eaeaea;
+  }
+</style>

@@ -1,3 +1,4 @@
+import { Rating } from '@mui/material';
 import { defineDb, defineTable, column } from 'astro:db';
 
 const User = defineTable({
@@ -32,6 +33,28 @@ const Comment = defineTable({
   }
 });
 
+const product = defineTable({
+  columns: {
+    id: column.number({ primaryKey: true }),
+    name: column.text(),
+    image_url: column.text(),
+    category: column.text(),
+    rating: column.text(),
+    description: column.text(),
+    price: column.number()
+  }
+});
+
+const product_image = defineTable({
+  columns: {
+    id: column.number({ primaryKey: true }),
+    product_id: column.number(),
+    order_by: column.number(),
+    type: column.number(),
+    url: column.text()
+  }
+});
+
 export default defineDb({
-  tables: { User, Post, Comment }
+  tables: { User, Post, Comment, product, product_image}
 });

@@ -1,0 +1,173 @@
+---
+export const prerender = false;
+
+import ProductCard from '../../components/ProductCard.astro';
+import { getAllProducts } from '../../lib/db';
+
+// Move data fetching inside try-catch for better error handling
+let products = [];
+let error = null;
+
+try {
+  products = await getAllProducts(); // Add await if it's async
+} catch (e) {
+  error = e.message;
+  console.error('Error fetching products:', e);
+}
+
+// Pagination setup
+const pageSize = 6;
+const page = Number(Astro.params.page) || 1;
+
+// Validate page number
+if (page < 1) {
+  return Astro.redirect('/products/1');
+}
+
+const totalPages = Math.ceil(products.length / pageSize);
+
+// Redirect if page exceeds total pages
+if (page > totalPages && totalPages > 0) {
+  return Astro.redirect(`/products/${totalPages}`);
+}
+
+const start = (page - 1) * pageSize;
+const end = start + pageSize;
+const paginatedProducts = products.slice(start, end);
+---
+
+<h1>All Products (Page {page})</h1>
+
+{error && (
+  <div class="error">
+    <p>Error loading products: {error}</p>
+  </div>
+)}
+
+{!error && products.length === 0 && (
+  <div class="no-products">
+    <p>No products found.</p>
+  </div>
+)}
+
+{!error && products.length > 0 && (
+  <>
+    <div class="grid">
+      {paginatedProducts.map(product => (
+        <ProductCard {...product} />
+      ))}
+    </div>
+
+    <div class="pagination">
+      {page > 1 && (
+        <a href={`/products/${page - 1}`} class="pagination-link">
+          ← Previous
+        </a>
+      )}
+      
+      <span class="page-info">
+        Page {page} of {totalPages}
+      </span>
+      
+      {page < totalPages && (
+        <a href={`/products/${page + 1}`} class="pagination-link">
+          Next →
+        </a>
+      )}
+    </div>
+
+    {/* Optional: Add page numbers */}
+    <div class="page-numbers">
+      {Array.from({ length: totalPages }).map((_, index) => {
+        const pageNum = index + 1;
+        return (
+          <a 
+            href={`/products/${pageNum}`}
+            class={pageNum === page ? 'page-number active' : 'page-number'}
+          >
+            {pageNum}
+          </a>
+        );
+      })}
+    </div>
+  </>
+)}
+
+<style>
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px;
+    margin: 2rem 0;
+  }
+
+  .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    margin: 2rem 0;
+  }
+
+  .pagination-link {
+    text-decoration: none;
+    font-weight: 500;
+    color: #333333;
+    padding: 8px 16px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    transition: all 0.2s;
+  }
+
+  .pagination-link:hover {
+    background-color: #f5f5f5;
+    border-color: #999;
+  }
+
+  .page-info {
+    font-weight: 500;
+    color: #666;
+  }
+
+  .page-numbers {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin: 1rem 0;
+  }
+
+  .page-number {
+    text-decoration: none;
+    padding: 6px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    color: #333;
+    font-size: 14px;
+    transition: all 0.2s;
+  }
+
+  .page-number:hover {
+    background-color: #f0f0f0;
+  }
+
+  .page-number.active {
+    background-color: #2563eb;
+    color: white;
+    border-color: #2563eb;
+  }
+
+  .error {
+    background-color: #fee;
+    border: 1px solid #fcc;
+    color: #c33;
+    padding: 1rem;
+    border-radius: 6px;
+    margin: 1rem 0;
+  }
+
+  .no-products {
+    text-align: center;
+    padding: 2rem;
+    color: #666;
+  }
+</style>

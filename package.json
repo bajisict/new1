@@ -7,6 +7,7 @@
     "start": "astro dev"
   },
   "dependencies": {
+    "@astrojs/db": "^0.15.0",
     "@astrojs/react": "^4.3.0",
     "@astrojs/vercel": "^8.1.4",
     "@emotion/react": "^11.14.0",
@@ -15,6 +16,7 @@
     "astro": "^5.7.13",
     "bootstrap": "^5.3.6",
     "esbuild": "^0.25.4",
+    "lucide-react": "^0.513.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },

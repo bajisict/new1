@@ -1,0 +1,43 @@
+---
+// product/[id].astro
+
+import AddToCartButton from "../../components/AddToCartButton.astro";
+import Layout from "../../layouts/Layout.astro";
+import { getProductById } from "../../lib/db";
+
+const { params } = Astro;
+const [product] = await getProductById(params.id);
+---
+
+<Layout title={product.name}>
+  <section class="container mx-auto p-4 grid md:grid-cols-2 gap-8">
+    <!-- Зураг -->
+    <div class="w-full">
+      <img
+        src={product.image_url}
+        alt={product.name}
+        class="rounded-xl shadow-lg w-full"
+      />
+    </div>
+
+    <!-- Мэдээлэл -->
+    <div class="flex flex-col space-y-4">
+      <h1 class="text-3xl font-bold">{product.name}</h1>
+      <p class="text-xl text-gray-600">{product.price}₮</p>
+      <p class="text-gray-700">{product.description}</p>
+
+      <!-- Сонголт -->
+      {
+        product.variants && (
+          <select class="p-2 border rounded-md w-full max-w-sm">
+            {product.variants.map((v) => (
+              <option value={v}>{v}</option>
+            ))}
+          </select>
+        )
+      }
+
+      <AddToCartButton id={product.id}, name={product.name}, price={product.price}, image={product.image_url}></AddToCartButton>
+    </div>
+  </section>
+</Layout>
